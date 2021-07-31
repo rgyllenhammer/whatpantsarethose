@@ -37,15 +37,15 @@ def generate_skater_dictionary(df):
     return skater_dictionary
 
 def generate_html(skater_dictionary):
-    with open('../website/whatpantsarethose.html', 'w') as htmlwriter:
-        htmlwriter.write(HTML_HEADER)
+    with open('../website/whatpantsarethose.html', 'r+') as htmlhandler:
+        htmlhandler.write(HTML_HEADER)
 
         for skater in skater_dictionary:
-            htmlwriter.write('<h2> {} ({} hits)</h2>'.format(skater, len(skater_dictionary[skater])))
+            htmlhandler.write('<h2> {} ({} hits)</h2>'.format(skater, len(skater_dictionary[skater])))
             for data_dictionary in skater_dictionary[skater]:
-                htmlwriter.write('<p>{} <a href="{}"> {} </a></p>'.format(data_dictionary['Pants'], data_dictionary['Post Url'], data_dictionary['Post Url']))
+                htmlhandler.write('<p>{} <a href="{}"> {} </a></p>'.format(data_dictionary['Pants'], data_dictionary['Post Url'], data_dictionary['Post Url']))
 
-        htmlwriter.write(HTML_FOOTER)
+        htmlhandler.write(HTML_FOOTER)
 
 insert_skater(df)
 insert_pant(df)
