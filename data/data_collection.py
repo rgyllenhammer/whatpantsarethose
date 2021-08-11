@@ -27,10 +27,10 @@ APPEND_OPTION = "append"
 ARGUMENT_OPTIONS = [CREATE_OPTION, APPEND_OPTION]
 
 # Paste chromedriver path here
-DRIVER = webdriver.Chrome('/path/to/chromedriver')
+DRIVER = webdriver.Chrome('/Users/reesegyllenhammer/downloads/chromedriver')
 
 # Paste instagram sessionid here
-SESSIONID = 'instagram_session_id'
+SESSIONID = '17b327ac839-2cdd62'
 HEADERS = {
 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43",
 "cookie":f'sessionid={SESSIONID};'
@@ -52,9 +52,9 @@ def download_all_posts(posts):
     print('***** SUCCESFULLY DOWNLOADED ALL POSTS, WRITING THEM TO FILE')
 
     with open('whatpantsarethose_captions_raw.txt', 'w') as fwritecaptions:
-    urls = extract_data(posts, 'url', 0, len(posts))
-    for url in urls:
-        fwritecaptions.write(url)
+        urls = extract_data(posts, 'url', 0, len(posts))
+        for url in urls:
+            fwritecaptions.write(url)
 
     with open('whatpantsarethose_urls.txt', 'w') as fwriteurls:
         captions = extract_data(posts, 'caption', 0, len(posts))
@@ -69,7 +69,7 @@ def download_until_last(posts):
         url_content = urlreader.read()
         most_recent_url = url_content.splitlines()[0].strip()
 
-    i = 1
+    i = 0
     for post in posts:
         post.scrape(headers=HEADERS)
         print('Successfully Scrape Post', i)
@@ -87,7 +87,7 @@ def download_until_last(posts):
         
     # May open in write since we have already read the URL content above
     with open('whatpantsarethose_urls.txt', 'w') as urlhandler:
-        urhandler.seek(0,0)
+        urlhandler.seek(0,0)
 
         for url in urls:
             urlhandler.write(url + '\n')
@@ -118,7 +118,7 @@ pants_profile.url = "https://www.instagram.com/whatpantsarethose/?hl=en"
 pants_profile.scrape(headers=HEADERS)
 
 # Processing scrape data and load posts
-posts = PANTS_PROFILE.get_posts(DRIVER, login_first=True, login_pause=20, max_failed_scroll=1000)
+posts = pants_profile.get_posts(DRIVER, login_first=True, login_pause=20, max_failed_scroll=1000)
 
 if sys.argv[1] == CREATE_OPTION:
     download_all_posts(posts)
