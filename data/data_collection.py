@@ -43,21 +43,27 @@ def extract_data(data, feature, start_index, end_index):
 # Scrapes all of POSTS until instagram rate limits us or it finishes
 def download_all_posts(posts):
     i = 1
+    max_index = len(posts)
     for post in posts:
-        post.scrape(headers=HEADERS)
+        try:
+            scrape(headers=HEADERS)
+        except:
+            max_index = i
+            break
+
         time.sleep(5)
         print('Successfully Scrape Post', i)
         i += 1
 
-    print('***** SUCCESFULLY DOWNLOADED ALL POSTS, WRITING THEM TO FILE')
+    print('***** SUCCESFULLY DOWNLOADED ALL POSTS UP TO {}, WRITING THEM TO FILE'.format(i))
 
     with open('whatpantsarethose_captions_raw.txt', 'w') as fwritecaptions:
-        urls = extract_data(posts, 'url', 0, len(posts))
+        urls = extract_data(posts, 'url', 0, max_index)
         for url in urls:
             fwritecaptions.write(url)
 
     with open('whatpantsarethose_urls.txt', 'w') as fwriteurls:
-        captions = extract_data(posts, 'caption', 0, len(posts))
+        captions = extract_data(posts, 'caption', 0, max_index)
         for caption in captions:
             fwriteurls.write(caption)
 
@@ -71,14 +77,17 @@ def download_until_last(posts):
 
     i = 1
     for post in posts:
-        post.scrape(headers=HEADERS)
-        print('Successfully Scrape Post', i)
+        try:
+            post.scrape(headers=HEADERS)
+            print('Successfully Scrape Post', i)
+        except:
+            print('STOPPING DUE TO ERROR ON POST', i)
 
         # Have seen the last post successfully downloaded
         if post['url'] == most_recent_url:
             if i == 1:
                 raise Exception('NO NEW POSTS')
-            
+
             print('New Posts', i - 1)
             break
 
