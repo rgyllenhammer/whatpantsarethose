@@ -69,21 +69,24 @@ def download_until_last(posts):
         url_content = urlreader.read()
         most_recent_url = url_content.splitlines()[0].strip()
 
-    i = 0
+    i = 1
     for post in posts:
         post.scrape(headers=HEADERS)
         print('Successfully Scrape Post', i)
 
         # Have seen the last post successfully downloaded
         if post['url'] == most_recent_url:
-            print('New Posts', i)
+            if i == 1:
+                raise Exception('NO NEW POSTS')
+            
+            print('New Posts', i - 1)
             break
 
         time.sleep(5)
         i += 1
 
-    urls = extract_data(posts, 'url', 0, i)
-    captions = extract_data(posts, 'caption', 0, i)
+    urls = extract_data(posts, 'url', 0, i - 1)
+    captions = extract_data(posts, 'caption', 0, i - 1)
         
     # May open in write since we have already read the URL content above
     with open('whatpantsarethose_urls.txt', 'w') as urlhandler:
