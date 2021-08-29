@@ -36,6 +36,9 @@ def generate_skater_dictionary(df):
             skater_dictionary[skater].append({'Post Url': url, 'Pants':pants})
     return skater_dictionary
 
+def generate_csv(df):
+    df.to_csv('pants_data.csv', index=False)
+
 def generate_html(skater_dictionary):
     with open('../website/whatpantsarethose.html', 'r+') as htmlhandler:
         htmlhandler.write(HTML_HEADER)
@@ -50,4 +53,5 @@ def generate_html(skater_dictionary):
 insert_skater(df)
 insert_pant(df)
 
-generate_html(generate_skater_dictionary(df))
+# generate_csv(df)
+# generate_html(generate_skater_dictionary(df))

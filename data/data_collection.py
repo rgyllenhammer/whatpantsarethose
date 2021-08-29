@@ -82,6 +82,7 @@ def download_until_last(posts):
             print('Successfully Scrape Post', i)
         except:
             print('STOPPING DUE TO ERROR ON POST', i)
+            break
 
         # Have seen the last post successfully downloaded
         if post['url'] == most_recent_url:
