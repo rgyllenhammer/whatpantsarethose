@@ -1,22 +1,6 @@
-'''
-FILE USED TO COLLECT DATA FROM INSTAGRAM.
-USES INSTASCRAPE TO COLLECT DATA BUT
-CAN BE DONE MANUALLY WITH SELENIUM / BS4
-
-RUN WITH
-    python3 -i data_collection.py create
-IN ORDER TO CREATE THE WHOLE DATASET FROM SCRATCH
-
-RUN WITH
-    python3 -i data_collection.py append
-IN ORDER TO CAPTURE THE MOST RECENT POSTS
-
-MUST BE RAN IN -i MODE BECAUSE INSTAGRAM MAY RATE LIMIT
-IN WHICH CASE DATA MUST BE WRITTEN TO FILE MANUALLY.
-'''
-
 from instascrape import *
 from selenium import webdriver
+from file_handler import FileHandler
 import time
 import sys
 
@@ -25,6 +9,10 @@ import sys
 CREATE_OPTION = "create"
 APPEND_OPTION = "append"
 ARGUMENT_OPTIONS = [CREATE_OPTION, APPEND_OPTION]
+
+URLS_FILE_PATH = 'whatpantsarethose_urls.txt'
+CAPTIONS_FILE_PATH = 'whatpantsarethose_captions_raw.txt'
+handler = FileHandler(URLS_FILE_PATH, CAPTIONS_FILE_PATH)
 
 # Paste chromedriver path here
 DRIVER = webdriver.Chrome('/Users/reesegyllenhammer/downloads/chromedriver')
@@ -57,23 +45,15 @@ def download_all_posts(posts):
 
     print('***** SUCCESFULLY DOWNLOADED ALL POSTS UP TO {}, WRITING THEM TO FILE'.format(i))
 
-    with open('whatpantsarethose_captions_raw.txt', 'w') as fwritecaptions:
-        urls = extract_data(posts, 'url', 0, max_index)
-        for url in urls:
-            fwritecaptions.write(url)
+    urls = extract_data(posts, 'url', 0, max_index)
+    captions = extract_data(posts, 'caption', 0, max_index)
 
-    with open('whatpantsarethose_urls.txt', 'w') as fwriteurls:
-        captions = extract_data(posts, 'caption', 0, max_index)
-        for caption in captions:
-            fwriteurls.write(caption)
-
+    handler.write_all_data(urls, captions)
 
 def download_until_last(posts):
 
     # Get most recent URL downloaded
-    with open('whatpantsarethose_urls.txt', 'r') as urlreader:
-        url_content = urlreader.read()
-        most_recent_url = url_content.splitlines()[0].strip()
+    most_recent_url = handler.get_most_recent_url()
 
     i = 1
     for post in posts:
@@ -98,24 +78,7 @@ def download_until_last(posts):
     urls = extract_data(posts, 'url', 0, i - 1)
     captions = extract_data(posts, 'caption', 0, i - 1)
         
-    # May open in write since we have already read the URL content above
-    with open('whatpantsarethose_urls.txt', 'w') as urlhandler:
-        urlhandler.seek(0,0)
-
-        for url in urls:
-            urlhandler.write(url + '\n')
-
-        urlhandler.write(url_content)
-
-    # Must open file as read and write because we have not yet read the contents to be able to insert into the front
-    with open('whatpantsarethose_captions_raw.txt', 'r+') as captionhandler:
-        caption_content = captionhandler.read()
-        captionhandler.seek(0, 0)
-
-        for caption in captions:
-            captionhandler.write(caption + '\n')
-
-        captionhandler.write(caption_content)
+    handler.prepend_new_data(urls, captions)
         
 '''----------- CONSTANTS / FUNCTIONS -------------'''
 
