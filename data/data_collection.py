@@ -1,10 +1,15 @@
+'''
+RUN WITH
+python3 data_collection.py create
+OR
+python3 data_collection.py append
+'''
+
 from instascrape import *
 from selenium import webdriver
 from file_handler import FileHandler
 import time
 import sys
-
-'''----------- CONSTANTS / FUNCTIONS -------------'''
 
 CREATE_OPTION = "create"
 APPEND_OPTION = "append"
@@ -79,24 +84,27 @@ def download_until_last(posts):
     captions = extract_data(posts, 'caption', 0, i - 1)
         
     handler.prepend_new_data(urls, captions)
-        
-'''----------- CONSTANTS / FUNCTIONS -------------'''
 
-# Check if argument is passed in and formatted correctly
-if (len(sys.argv) != 2 or sys.argv[1] not in ARGUMENT_OPTIONS):
-    raise Exception('ERROR NOT ENOUGH ARGUMENTS')
+def main():
+    # Check if argument is passed in and formatted correctly
+    if (len(sys.argv) != 2 or sys.argv[1] not in ARGUMENT_OPTIONS):
+        raise Exception('NOT ENOUGH ARGUMENTS')
 
-# Instantiation
-pants_profile = Profile("https://www.instagram.com/whatpantsarethose/?hl=en")
-pants_profile.url = "https://www.instagram.com/whatpantsarethose/?hl=en"
+    # Instantiation
+    pants_profile = Profile("https://www.instagram.com/whatpantsarethose/?hl=en")
+    pants_profile.url = "https://www.instagram.com/whatpantsarethose/?hl=en"
 
-# Scraping profile to load posts
-pants_profile.scrape(headers=HEADERS)
+    # Scraping profile to load posts
+    pants_profile.scrape(headers=HEADERS)
 
-# Processing scrape data and load posts
-posts = pants_profile.get_posts(DRIVER, login_first=True, login_pause=20, max_failed_scroll=1000)
+    # Processing scrape data and load posts
+    posts = pants_profile.get_posts(DRIVER, login_first=True, login_pause=20, max_failed_scroll=1000)
 
-if sys.argv[1] == CREATE_OPTION:
-    download_all_posts(posts)
-else:
-    download_until_last(posts)
+    if sys.argv[1] == CREATE_OPTION:
+        download_all_posts(posts)
+    else:
+        download_until_last(posts)
+
+
+if __name__ == '__main__':
+    main()
